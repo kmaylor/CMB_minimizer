@@ -266,7 +266,7 @@ for spectra in ['143x143','150x150','150x143']:
             for k,v in best.iteritems():
                 results[k].append(v)
         
-    json.dump(results, open("params_output/sim_params"+spectra+".txt",'w'))
+    json.dump(results, open("params_output/sim_params"+spectra+str(lmax)".txt",'w'))
     
     data_best=CMB_param_estimator(like(spectra,str(i),lmax=lmax, use_data=True),
                          start,
@@ -278,6 +278,6 @@ for spectra in ['143x143','150x150','150x143']:
     results = data_best
     for k,v in results.iteritems():
         results[k] = [v]
-    json.dump(results, open("params_output/data_params"+spectra+".txt",'w'))
+    json.dump(results, open("params_output/data_params"+spectra+str(lmax)+".txt",'w'))
 
 print "All done, thanks for pushing the button Zhen"  
