@@ -232,9 +232,8 @@ def CMB_param_estimator(like, start, method = 'powell', options = None):
                                     
     output = dict(zip(like.param_names,list(best_fit_params.x)))
     return output
-
+j = 0
 for spectra in ['143x143','150x150','150x143']:
- 
     if spectra == '150x150':
         start = [  1.04037203,   0.02264724,   0.13110934,   1.93666773,
          0.9254644 ,   0.06416065,   5.72741826,  20.0334358 ,   5.3754613 ]
@@ -258,6 +257,8 @@ for spectra in ['143x143','150x150','150x143']:
                                    })
     
         print best
+        print "percent complete"
+        print ((i+1)+(400*j))/1203.0*100
         if results == None: 
             results = best
             for k,v in results.iteritems():
@@ -265,7 +266,7 @@ for spectra in ['143x143','150x150','150x143']:
         else:    
             for k,v in best.iteritems():
                 results[k].append(v)
-        
+    j+=1
     json.dump(results, open("params_output/sim_params"+spectra+str(lmax)+".txt",'w'))
     
     data_best=CMB_param_estimator(like(spectra,str(i),lmax=lmax, use_data=True),
@@ -279,5 +280,4 @@ for spectra in ['143x143','150x150','150x143']:
     for k,v in results.iteritems():
         results[k] = [v]
     json.dump(results, open("params_output/data_params"+spectra+str(lmax)+".txt",'w'))
-
 print "All done, thanks for pushing the button Zhen"  
