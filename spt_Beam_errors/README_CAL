@@ -1,0 +1,34 @@
+This file contains calibration information for the three SPT-SZ bands.
+The calibrations in this file are only appropriate for use with the 
+rev3.2 beams (spt.uchicago.edu:/data/sptdat/beams/rev3.2).
+
+The procedure for obtaining these numbers is described on the wiki
+page https://spt.uchicago.edu/trac/wiki/planck_cal_all. The short 
+version is: this is a bandpower-based comparison between the 
+2500 deg^2 SPT bandpowers and the full-sky Planck bandpowers.
+
+The best-fit calibrations (i.e., the number by which the out-of-the-box,
+rcw38-calibrated maps should be multiplied to make them agree with Planck)
+for the three bands are:
+
+95 GHz: multiply map by 0.703
+150 GHz: multiply map by 0.813
+220 GHz: multiply map by 0.713
+
+The single-band fractional uncertainties (square root of the diagonal
+elements of the band-band calibration covariance matrix divided by 
+best-fit calibration) are:
+
+95 GHz: 0.65%
+150 GHz: 0.63% 
+220 GHz: 1.21%
+
+Note that these uncertainties are in TEMPERATURE, not power.
+
+The full fractional covariance matrix is:
+
+ 4.244e-05  3.844e-05  3.844e-05
+ 3.844e-05  3.965e-05  3.844e-05
+ 3.844e-05  3.844e-05  1.466e-04
+
+TC, 09Aug13
