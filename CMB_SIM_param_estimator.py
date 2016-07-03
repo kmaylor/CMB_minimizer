@@ -258,7 +258,7 @@ for spectra in ['143x143','150x150','150x143']:
     
         print best
         print "percent complete"
-        print ((i+1)+(400*j))/1203.0*100
+        print ((i+1)+(400*j))/1203.0*100, '%'
         if results == None: 
             results = best
             for k,v in results.iteritems():
