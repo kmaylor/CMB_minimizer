@@ -69,7 +69,7 @@ class like():
         self.sigma = loadtxt(sim_path+'covariance.txt')
         
         self.windows = array([loadtxt(sim_path+'window/window_%i'%i)[:,1] for i in range(37)])
-        self.windowrange = (lambda x: slice(min(x),max(x)+1))(loadtxt(sim_path+'window/window_1')[:,0])
+        self.windowrange = int((lambda x: slice(min(x),max(x)+1))(loadtxt(sim_path+'window/window_1')[:,0]))
         self.lmax = int(self.windowrange.stop)
         
         if lmax is not None:
