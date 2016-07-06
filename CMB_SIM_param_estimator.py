@@ -250,8 +250,9 @@ else:
 
 
 results = None
-
+j=0
 for i in arange(sim_start,sim_end+1):
+    j+=1
         best=CMB_param_estimator(like(spectra,str(i),lmax = lmax),
                          start,
                          method = 'Nelder-Mead',
@@ -260,7 +261,7 @@ for i in arange(sim_start,sim_end+1):
     
         print best
         print "percent complete"
-        print (i+1)/(sim_end-sim_start)*100, '%'
+        print j/((sim_end-sim_start)*100.0), '%'
         if results == None: 
             results = best
             for k,v in results.iteritems():
@@ -268,18 +269,18 @@ for i in arange(sim_start,sim_end+1):
         else:    
             for k,v in best.iteritems():
                 results[k].append(v)
+if i = 399:    
+    json.dump(results, open("params_output/sim_params"+spectra+"sims"+str(sim_start)+"_"+str(sim_end)+"_lmax_"+str(lmax)+".txt",'w'))
     
-json.dump(results, open("params_output/sim_params"+spectra+"sims"+str(sim_start)+"_"+str(sim_end)+"_lmax_"+str(lmax)+".txt",'w'))
-    
-data_best=CMB_param_estimator(like(spectra,str(i),lmax=lmax, use_data=True),
+    data_best=CMB_param_estimator(like(spectra,str(i),lmax=lmax, use_data=True),
                          start,
                          method = 'Nelder-Mead',
                          options = {'disp': True, 'xtol':1e-4, 'ftol':1e-4,
                                    })
     
-print data_best
-results = data_best
-for k,v in results.iteritems():
+    print data_best
+    results = data_best
+    for k,v in results.iteritems():
         results[k] = [v]
-json.dump(results, open("params_output/data_params"+spectra+str(lmax)+".txt",'w'))
+    json.dump(results, open("params_output/data_params"+spectra+str(lmax)+".txt",'w'))
 print "Done with this batch"  
