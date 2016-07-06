@@ -60,7 +60,7 @@ class like():
         
         else:
             print 'needs to be 150x150, 150x143, or 143x143'
-        
+       
         self.param_names = ['theta','ombh2','ommh2','clamp','ns','tau','Asz','Aps','Acib']
 
         if not use_data: 
@@ -71,7 +71,7 @@ class like():
         self.sigma = loadtxt(sim_path+'covariance.txt')
         
         self.windows = array([loadtxt(sim_path+'window/window_%i'%i)[:,1] for i in range(37)])
-        self.windowrange = int((lambda x: slice(min(x),max(x)+1))(loadtxt(sim_path+'window/window_1')[:,0]))
+        self.windowrange = (lambda x: slice(int(min(x)),int(max(x)+1)))(loadtxt(sim_path+'window/window_1')[:,0])
         self.lmax = int(self.windowrange.stop)
         
         if lmax is not None:
@@ -127,6 +127,7 @@ class like():
         lnl = dot(dcl,cho_solve(cho_cov, dcl))/2   + \
         (fit_params['tau']-0.066)**2/(2*0.02**2) + \
         self.fgs_priors(fit_params)
+       
         return lnl
     
     
