@@ -12,8 +12,10 @@ from numpy.random import multivariate_normal
 import json
 from itertools import takewhile
 
-
-lmax = argv[1]
+spectra = argv[1]
+sim_start = int(argv[2])
+sim_end = int(argv[3])
+lmax = int(argv[4])
 
 class cmb_model():
     
@@ -232,24 +234,23 @@ def CMB_param_estimator(like, start, method = 'powell', options = None):
                                     
     output = dict(zip(like.param_names,list(best_fit_params.x)))
     return output
-j = 0
-for spectra in ['143x143','150x150','150x143']:
-    if spectra == '150x150':
+
+if spectra == '150x150':
         start = [  1.04037203,   0.02264724,   0.13110934,   1.93666773,
          0.9254644 ,   0.06416065,   5.72741826,  20.0334358 ,   5.3754613 ]
 
-    elif spectra =='150x143':
+elif spectra =='150x143':
         start = [  1.03958287,   0.02247682,   0.13569471,   1.93508836,
          0.93324658,   0.06348503,   6.32184949,  19.77749923,   5.58548061]
-    else:
+else:
         start = [  1.03924319,   0.0221666 ,   0.14439015,   1.94318957,
          0.94628772,   0.06790312,   6.63191637,  20.09969542,   5.25854533]
 
 
 
-    results = None
+results = None
 
-    for i in arange(400):
+for i in arange(sim_start,sim_end+1):
         best=CMB_param_estimator(like(spectra,str(i),lmax = lmax),
                          start,
                          method = 'Nelder-Mead',
@@ -258,7 +259,7 @@ for spectra in ['143x143','150x150','150x143']:
     
         print best
         print "percent complete"
-        print ((i+1)+(400*j))/1203.0*100, '%'
+        print (i+1)/(sim_end-sim_start)*100, '%'
         if results == None: 
             results = best
             for k,v in results.iteritems():
@@ -266,18 +267,18 @@ for spectra in ['143x143','150x150','150x143']:
         else:    
             for k,v in best.iteritems():
                 results[k].append(v)
-    j+=1
-    json.dump(results, open("params_output/sim_params"+spectra+str(lmax)+".txt",'w'))
     
-    data_best=CMB_param_estimator(like(spectra,str(i),lmax=lmax, use_data=True),
+json.dump(results, open("params_output/sim_params"+spectra+"sims"+str(sim_start)+"_"+str(sim_end)+"_lmax_"+str(lmax)+".txt",'w'))
+    
+data_best=CMB_param_estimator(like(spectra,str(i),lmax=lmax, use_data=True),
                          start,
                          method = 'Nelder-Mead',
                          options = {'disp': True, 'xtol':1e-4, 'ftol':1e-4,
                                    })
     
-    print data_best
-    results = data_best
-    for k,v in results.iteritems():
+print data_best
+results = data_best
+for k,v in results.iteritems():
         results[k] = [v]
-    json.dump(results, open("params_output/data_params"+spectra+str(lmax)+".txt",'w'))
-print "All done, thanks for pushing the button Zhen"  
+json.dump(results, open("params_output/data_params"+spectra+str(lmax)+".txt",'w'))
+print "Done with this batch"  
