@@ -250,9 +250,7 @@ else:
 
 
 results = None
-j=0
 for i in arange(sim_start,sim_end+1):
-        j+=1
         best=CMB_param_estimator(like(spectra,str(i),lmax = lmax),
                          start,
                          method = 'Nelder-Mead',
@@ -269,9 +267,8 @@ for i in arange(sim_start,sim_end+1):
         else:    
             for k,v in best.iteritems():
                 results[k].append(v)
-if i == 399:    
-    json.dump(results, open("params_output/sim_params"+spectra+"sims"+str(sim_start)+"_"+str(sim_end)+"_lmax_"+str(lmax)+".txt",'w'))
-    
+json.dump(results, open("params_output/sim_params"+spectra+"sims"+str(sim_start)+"_"+str(sim_end)+"_lmax_"+str(lmax)+".txt",'w'))
+if sim_start == 0:   
     data_best=CMB_param_estimator(like(spectra,str(i),lmax=lmax, use_data=True),
                          start,
                          method = 'Nelder-Mead',
