@@ -250,7 +250,9 @@ else:
 
 
 results = None
+j=0
 for i in arange(sim_start,sim_end+1):
+        j+=1
         best=CMB_param_estimator(like(spectra,str(i),lmax = lmax),
                          start,
                          method = 'Nelder-Mead',
