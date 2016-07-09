@@ -75,7 +75,7 @@ class like():
         self.lmax = int(self.windowrange.stop)
         
         if lmax is not None:
-            bmax = sum(1 for _ in takewhile(lambda x: x<lmax, [3251 - sum(1 for _ in takewhile(lambda x: abs(x)<.001,reversed(w)) ) for w in self.windows]))
+            bmax = sum(1 for _ in takewhile(lambda x: x<lmax, [self.windowrange.stop+1 - sum(1 for _ in takewhile(lambda x: abs(x)<.001,reversed(w)) ) for w in self.windows]))
         else: bmax = 37
         
         self.spectra = self.spectra[:bmax]*cal
