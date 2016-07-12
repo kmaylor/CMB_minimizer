@@ -64,11 +64,12 @@ class like():
         self.param_names = ['theta','ombh2','ommh2','clamp','ns','tau','Asz','Aps','Acib']
 
         if not use_data: 
-            self.spectra = loadtxt(sim_path+'sims400/bandpower_sim_'+sim_num+'.txt')[:,-1]
+            self.spectra = loadtxt(sim_path+'sims500/bandpower_sim_'+sim_num+'.txt')[:,-1]
+            self.sigma = loadtxt(sim_path+'covariance.txt')
         else:
-            self.spectra = loadtxt(sim_path+'/bandpower.txt')[:,-1]
-            
-        self.sigma = loadtxt(sim_path+'covariance.txt')
+            self.spectra = loadtxt(sim_path+'/bandpower.txt')[:,-1]*cal
+            self.sigma = loadtxt(sim_path+'covariance.txt')*cal**2
+        
         
         self.windows = array([loadtxt(sim_path+'window/window_%i'%i)[:,1] for i in range(37)])
         self.windowrange = (lambda x: slice(int(min(x)),int(max(x)+1)))(loadtxt(sim_path+'window/window_1')[:,0])
@@ -78,8 +79,8 @@ class like():
             bmax = sum(1 for _ in takewhile(lambda x: x<lmax, [self.windowrange.stop+1 - sum(1 for _ in takewhile(lambda x: abs(x)<.001,reversed(w)) ) for w in self.windows]))
         else: bmax = 37
         
-        self.spectra = self.spectra[:bmax]*cal
-        self.sigma = self.sigma[:bmax,:bmax]*cal**2
+        self.spectra = self.spectra[:bmax]
+        self.sigma = self.sigma[:bmax,:bmax]
         self.windows = self.windows[:bmax] 
               
         if whiten:
