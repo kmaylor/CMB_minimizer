@@ -71,13 +71,13 @@ class like():
             self.sigma = loadtxt(sim_path+'covariance.txt')*cal**2
         
         
-        self.windows = array([loadtxt(sim_path+'window/window_%i'%i)[:,1] for i in range(37)])
+        self.windows = array([loadtxt(sim_path+'window/window_%i'%i)[:,1] for i in range(47)])
         self.windowrange = (lambda x: slice(int(min(x)),int(max(x)+1)))(loadtxt(sim_path+'window/window_1')[:,0])
         self.lmax = int(self.windowrange.stop)
         
         if lmax is not None:
             bmax = sum(1 for _ in takewhile(lambda x: x<lmax, [self.windowrange.stop+1 - sum(1 for _ in takewhile(lambda x: abs(x)<.001,reversed(w)) ) for w in self.windows]))
-        else: bmax = 37
+        else: bmax = 47
         
         self.spectra = self.spectra[:bmax]
         self.sigma = self.sigma[:bmax,:bmax]
