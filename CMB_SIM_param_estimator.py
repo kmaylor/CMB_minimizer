@@ -64,7 +64,7 @@ class like():
         self.param_names = ['theta','ombh2','ommh2','clamp','ns','tau','Asz','Aps','Acib']
 
         if not use_data: 
-            self.spectra = loadtxt(sim_path+'sims500/bandpower_sim_'+sim_num+'.txt')[:,-1]
+            self.spectra = loadtxt(sim_path+'sims400/bandpower_sim_'+sim_num+'.txt')[:,-1]
             self.sigma = loadtxt(sim_path+'covariance.txt')
         else:
             self.spectra = loadtxt(sim_path+'/bandpower.txt')[:,-1]*cal
