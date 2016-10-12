@@ -83,9 +83,10 @@ class like():
         
        
         dat_file='/home/kmaylor/Python_Projects/PlanckVSPT/planckcmb/cl_cmb_v9.7CS_13p.dat' #planck 2015 bandpowers
+        DPl=loadtxt(dat_file)[:,1]           
         planck_range = (lambda x: slice(min(x),max(x)+1))(loadtxt(dat_file)[:,0])
         planck_max = planck_range.stop-50
-        self.planck_data =array([dot(DPl,p[:planck_max]) for p in self.windows[:37]])#150x143 windows
+        self.planck_spectra =array([dot(DPl,p[:planck_max]) for p in self.windows[:37]])#150x143 windows
         import struct
         f=open("/home/kmaylor/Python_Projects/PlanckVSPT/planckcmb/c_matrix_v9.7CS_13p.dat").read()
         cv=array(struct.unpack('d'*(len(f)/8-1),f[4:-4])).reshape((2451,2451)) #lower triangular
