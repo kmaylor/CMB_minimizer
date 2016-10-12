@@ -28,7 +28,7 @@ class cmb_model():
     def __call__(self, fit_params):
         self.pars.set_cosmology(H0=fit_params['H0'],
                            ombh2=fit_params['ombh2'],
-                           omch2=fit_params['ommh2']-fit_params['ombh2'],
+                           omch2=fit_params['omch2'],
                            tau=fit_params['tau']
                            )
                                       
