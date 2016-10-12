@@ -96,7 +96,7 @@ class like():
         if whiten:
             self.cho_param_cov = cholesky(loadtxt(sim_path+self.param_cov)).T
         else:
-            self.cho_param_cov = identity(7)
+            self.cho_param_cov = identity(5)
         
         self.patch_spectra = self.patch_spectra[:bmax]
         self.patch_sigma = self.patch_sigma[:bmax,:bmax]
