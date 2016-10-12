@@ -134,7 +134,7 @@ class like():
         fit_params = dict(zip(self.param_names,dot(self.cho_param_cov,fit_params)))
         
         self.model,cho_cov =  self.model_and_cov(fit_params)
-        self.dcl = (self.patch_data/self.planck_data)*self.pb_model - self.model
+        self.dcl = (self.patch_spectra/self.planck_spectra)*self.pb_model - self.model
         lnl = dot(self.dcl,cho_solve(cho_cov, self.dcl))/2   + self.fgs_priors(fit_params)
        
         return lnl
