@@ -284,5 +284,4 @@ if sim_start == 0:
         results[k] = [v]
     json.dump(results, open("params_output/data_params"+spectra+str(lmax)+".txt",'w'))
 print "Done with this batch"  
-Contact GitHub API Training Shop Blog About
-© 2016 GitHub, Inc. Terms Privacy Security Status Help
+
