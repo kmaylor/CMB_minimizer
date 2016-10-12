@@ -115,7 +115,7 @@ class like():
         self.pb_model=dot(self.windows,self.pmodel[self.windowrange])
         
     def model_and_cov(self, fit_params):
-        model = (self.planck_data*fit_params['A']*self.b**fit_params['n'])[self.windowrange] + self.fgs(fit_params,self.lmax)[self.windowrange] #(self.pmodel*self.A*self.b**self.n)[self.windowrange] +self.fgs([self.Asz,self.Aps,self.Acib],self.freqs)[self.windowrange]
+        model = (self.pmodel*fit_params['A']*self.b**fit_params['n'])[self.windowrange] + self.fgs(fit_params,self.lmax)[self.windowrange] #(self.pmodel*self.A*self.b**self.n)[self.windowrange] +self.fgs([self.Asz,self.Aps,self.Acib],self.freqs)[self.windowrange]
         if self.freqs[0] !=143:
             self.cho_cov = cho_factor(self.patch_sigma+self.planck_sigma+dot(self.windows,dot(self.beam_corr*outer(model,model),self.windows.T)))
         else:
