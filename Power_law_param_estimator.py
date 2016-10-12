@@ -26,7 +26,7 @@ class cmb_model():
         self.pars.set_for_lmax(self.lmax, lens_potential_accuracy=1)
 
     def __call__(self, fit_params):
-        self.pars.set_cosmology(H0=None, cosmomc_theta=fit_params['theta']/100.,
+        self.pars.set_cosmology(H0=fit_params['H0'],
                            ombh2=fit_params['ombh2'],
                            omch2=fit_params['ommh2']-fit_params['ombh2'],
                            tau=fit_params['tau']
@@ -42,8 +42,9 @@ class cmb_model():
     
 class like():
     
-    def __init__(self, spectra, sim_num,lmax = 2500, use_data = False, whiten = True, **kwargs):
-        
+    def __init__(self, spectra, sim_num,lmax = 2500, use_data = False, whiten = False, **kwargs):
+        self.pmodel = cmb_model()({'H0':67.303652516804718, 'ombh2':0.02222159307227348,'omch2':0.11975469875288727, 'tau':0.07765761665780771,
+                                  'As':2.1977490175699505e-09,'ns':0.9654902528685344})
         self.freqs = map(int,[spectra[:3],spectra[4:]])
         if spectra == '150x150':
             sim_path = 'sims/150x150sims/'
@@ -61,16 +62,16 @@ class like():
         else:
             print 'needs to be 150x150, 150x143, or 143x143'
        
-        self.param_names = ['theta','ombh2','ommh2','clamp','ns','tau','Asz','Aps','Acib']
+        self.param_names = ['A','n','Asz','Aps','Acib']
 
         if not use_data: 
-            self.spectra = loadtxt(sim_path+'sims400/bandpower_sim_'+sim_num+'.txt')[:,-1]
-            self.sigma = loadtxt(sim_path+'covariance.txt')
+            self.patch_spectra = loadtxt(sim_path+'sims400/bandpower_sim_'+sim_num+'.txt')[:,-1]
+            self.patch_sigma = loadtxt(sim_path+'covariance.txt')
         else:
-            self.spectra = loadtxt(sim_path+'/bandpower.txt')[:,-1]*cal
-            self.sigma = loadtxt(sim_path+'covariance.txt')*cal**2
+            self.patch_spectra = loadtxt(sim_path+'/bandpower.txt')[:,-1]*cal
+            self.patch_sigma = loadtxt(sim_path+'covariance.txt')*cal**2
         
-        
+         
         self.windows = array([loadtxt(sim_path+'window/window_%i'%i)[:,1] for i in range(47)])
         self.windowrange = (lambda x: slice(int(min(x)),int(max(x)+1)))(loadtxt(sim_path+'window/window_1')[:,0])
         self.lmax = int(self.windowrange.stop)
@@ -79,15 +80,29 @@ class like():
             bmax = sum(1 for _ in takewhile(lambda x: x<lmax, [self.windowrange.stop+1 - sum(1 for _ in takewhile(lambda x: abs(x)<.001,reversed(w)) ) for w in self.windows]))
         else: bmax = 47
         
-        self.spectra = self.spectra[:bmax]
-        self.sigma = self.sigma[:bmax,:bmax]
-        self.windows = self.windows[:bmax] 
-              
+        
+       
+        dat_file='/home/kmaylor/Python_Projects/PlanckVSPT/planckcmb/cl_cmb_v9.7CS_13p.dat' #planck 2015 bandpowers
+        planck_range = (lambda x: slice(min(x),max(x)+1))(loadtxt(dat_file)[:,0])
+        planck_max = planck_range.stop-50
+        self.planck_data =array([dot(DPl,p[:planck_max]) for p in self.windows[:37]])#150x143 windows
+        import struct
+        f=open("/home/kmaylor/Python_Projects/PlanckVSPT/planckcmb/c_matrix_v9.7CS_13p.dat").read()
+        cv=array(struct.unpack('d'*(len(f)/8-1),f[4:-4])).reshape((2451,2451)) #lower triangular
+        cv = cv + tril(cv,-1).T #sets diagonal to zero and adds transpose to original cv to make symmetric cv
+        self.planck_sigma=dot(self.windows[:37,:planck_max],dot(cv,self.windows[:37,:planck_max].T)) #b      
+        
         if whiten:
             self.cho_param_cov = cholesky(loadtxt(sim_path+self.param_cov)).T
         else:
             self.cho_param_cov = identity(7)
-                    
+        
+        self.patch_spectra = self.patch_spectra[:bmax]
+        self.patch_sigma = self.patch_sigma[:bmax,:bmax]
+        self.planck_spectra = self.planck_spectra[:bmax]
+        self.planck_sigma = self.planck_sigma[:bmax,:bmax]
+        self.windows = self.windows[:bmax]
+
         self.beam_corr = beam_errs(freqs=self.freqs)[self.windowrange,self.windowrange]
         self.fgs = fgs_model(self.freqs)
         self.tSZ_dep = self.fgs.tsz_dep
@@ -96,14 +111,17 @@ class like():
         self.ps_prior = 19.3
         self.cib_prior = 5.0
         self.cmb_model = cmb_model(lmax = self.lmax)
+        self.b = arange(4000)/4000.
+        self.pb_model=dot(self.windows,self.pmodel[self.windowrange])
         
-    def cl_model(self, fit_params):
-        
-        spectra_theory = self.cmb_model(fit_params)[self.windowrange]
-        fgs = self.fgs(fit_params,self.lmax)[self.windowrange]
-        model = (spectra_theory+fgs)
-        return model
-      
+    def model_and_cov(self, fit_params):
+        model = (self.planck_data*fit_params['A']*self.b**fit_params['n'])[self.windowrange] + self.fgs(fit_params,self.lmax)[self.windowrange] #(self.pmodel*self.A*self.b**self.n)[self.windowrange] +self.fgs([self.Asz,self.Aps,self.Acib],self.freqs)[self.windowrange]
+        if self.freqs[0] !=143:
+            self.cho_cov = cho_factor(self.patch_sigma+self.planck_sigma+dot(self.windows,dot(self.beam_corr*outer(model,model),self.windows.T)))
+        else:
+            self.cho_cov = cho_factor(self.patch_sigma+self.planck_sigma)
+        return (dot(self.windows,model),self.cho_cov)  
+    
     def fgs_priors(self, fit_params):
         
         return (fit_params['Asz']-self.sz_prior)**2./(2.*3.**2.)+(fit_params['Aps']-self.ps_prior)**2./(2.*3.5**2.)+\
@@ -113,21 +131,10 @@ class like():
     def __call__(self, fit_params):
         
         fit_params = dict(zip(self.param_names,dot(self.cho_param_cov,fit_params)))
-        try:
-            model =  self.cl_model(fit_params)
-        except ValueError:
-            return inf
-        dcl = self.spectra - dot(self.windows,model)
-        if (self.freqs[0]== 150):
-            model_matrix = outer(model,model)
-            beam_cov = dot(self.windows,dot(self.beam_corr*model_matrix,self.windows.T))
-        else:
-            beam_cov = 0
-        cho_cov = cho_factor(self.sigma+beam_cov)
         
-        lnl = dot(dcl,cho_solve(cho_cov, dcl))/2   + \
-        (fit_params['tau']-0.066)**2/(2*0.02**2) + \
-        self.fgs_priors(fit_params)
+        self.model,cho_cov =  self.model_and_cov()
+        self.dcl = (self.patch_data/self.planck_data)*self.pb_model - self.model
+        lnl = dot(self.dcl,cho_solve(cho_cov, self.dcl))/2   + self.fgs_priors(fit_params)
        
         return lnl
     
@@ -237,16 +244,9 @@ def CMB_param_estimator(like, start, method = 'powell', options = None):
     output = dict(zip(like.param_names,list(best_fit_params.x)))
     return output
 
-if spectra == '150x150':
-        start = [  1.04037203,   0.02264724,   0.13110934,   1.93666773,
-         0.9254644 ,   0.06416065,   5.72741826,  20.0334358 ,   5.3754613 ]
+    start = [  1.0,   0.0,   5.72741826,  20.0334358 ,   5.3754613 ]
 
-elif spectra =='150x143':
-        start = [  1.03958287,   0.02247682,   0.13569471,   1.93508836,
-         0.93324658,   0.06348503,   6.32184949,  19.77749923,   5.58548061]
-else:
-        start = [  1.03924319,   0.0221666 ,   0.14439015,   1.94318957,
-         0.94628772,   0.06790312,   6.63191637,  20.09969542,   5.25854533]
+
 
 
 
