@@ -245,7 +245,7 @@ def CMB_param_estimator(like, start, method = 'powell', options = None):
     output = dict(zip(like.param_names,list(best_fit_params.x)))
     return output
 
-    start = [  1.0,   0.0,   5.72741826,  20.0334358 ,   5.3754613 ]
+start = [  1.0,   0.0,   5.72741826,  20.0334358 ,   5.3754613 ]
 
 
 
