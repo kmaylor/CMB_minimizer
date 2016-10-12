@@ -263,7 +263,7 @@ for i in arange(sim_start,sim_end+1):
     
         print best
         print "percent complete"
-        print (j/((sim_end-sim_start)))*100, '%'
+        print (j/((sim_end-sim_start)*1.0))*100, '%'
         if results == None: 
             results = best
             for k,v in results.iteritems():
