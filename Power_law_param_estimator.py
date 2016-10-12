@@ -4,7 +4,7 @@ import camb
 from camb import model, initialpower
 from scipy.linalg import cho_factor, cho_solve, cholesky, inv
 from math import pi, log
-from numpy import inf, append, loadtxt, array, dot, isnan, identity, arange, exp, diag, hstack,delete,outer, zeros, shape
+from numpy import inf, append, loadtxt, array, dot, isnan, identity, arange, exp, diag, hstack,delete,outer, zeros, shape, tril
 from matplotlib.pyplot import plot
 from scipy.optimize import minimize
 import os.path as osp
