@@ -32,7 +32,7 @@ class cmb_model():
                            tau=fit_params['tau']
                            )
                                       
-        self.pars.InitPower.set_params(As=fit_params['clamp']*1e-9*exp(2*fit_params['tau']),
+        self.pars.InitPower.set_params(As=fit_params['As'],
                                   ns=fit_params['ns'])
                                                                            
         powers = camb.get_results(self.pars).get_cmb_power_spectra(self.pars)
