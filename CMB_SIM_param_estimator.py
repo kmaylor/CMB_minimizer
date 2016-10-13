@@ -71,7 +71,7 @@ class like():
             self.sigma = loadtxt(sim_path+'covariance.txt')*cal**2
         
         
-        self.windows = array([loadtxt(sim_path+'window/window_%i'%i)[:,1] for i in range(47)])
+        self.windows = array([loadtxt(sim_path+'window/window_%i'%i)[:,1] for i in range(len(self.spectra))])
         self.windowrange = (lambda x: slice(int(min(x)),int(max(x)+1)))(loadtxt(sim_path+'window/window_1')[:,0])
         self.lmax = int(self.windowrange.stop)
         
