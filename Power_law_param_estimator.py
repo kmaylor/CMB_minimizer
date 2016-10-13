@@ -50,14 +50,17 @@ class like():
             sim_path = 'sims/150x150sims/'
             self.param_cov = 'params_for_whitening_150x150.txt'
             cal = 1.0091**2
+            cutoff=47
         elif spectra ==  '150x143':
             sim_path = 'sims/150x143sims/'
             self.param_cov = 'params_for_whitening_150x143.txt'
             cal = 1.0091
+            cutoff=43
         elif spectra == '143x143':
             sim_path = 'sims/143x143sims/'
             self.param_cov = 'params_for_whitening_143x143.txt'
             cal = 1
+            cutoff=37
         
         else:
             print 'needs to be 150x150, 150x143, or 143x143'
@@ -65,11 +68,11 @@ class like():
         self.param_names = ['A','n','Asz','Aps','Acib']
 
         if not use_data: 
-            self.patch_spectra = loadtxt(sim_path+'sims400/bandpower_sim_'+sim_num+'.txt')[:,-1]
-            self.patch_sigma = loadtxt(sim_path+'covariance.txt')
+            self.patch_spectra = loadtxt(sim_path+'sims400/bandpower_sim_'+sim_num+'.txt')[:cutoff,-1]
+            self.patch_sigma = loadtxt(sim_path+'covariance.txt')[:cutoff,:cutoff]
         else:
-            self.patch_spectra = loadtxt(sim_path+'/bandpower.txt')[:,-1]*cal
-            self.patch_sigma = loadtxt(sim_path+'covariance.txt')*cal**2
+            self.patch_spectra = loadtxt(sim_path+'/bandpower.txt')[:cutoff,-1]*cal
+            self.patch_sigma = loadtxt(sim_path+'covariance.txt')[:cutoff,:cutoff]*cal**2
         
          
         self.windows = array([loadtxt(sim_path+'window/window_%i'%i)[:,1] for i in range(len(self.patch_spectra))])
