@@ -48,11 +48,11 @@ class like():
         if spectra == '150x150':
             sim_path = 'sims/150x150sims/'
             self.param_cov = 'params_for_whitening_150x150.txt'
-            cal = 1.0091**2
+            cal = 1.0087**2
         elif spectra ==  '150x143':
             sim_path = 'sims/150x143sims/'
             self.param_cov = 'params_for_whitening_150x143.txt'
-            cal = 1.0091
+            cal = 1.0087
         elif spectra == '143x143':
             sim_path = 'sims/143x143sims/'
             self.param_cov = 'params_for_whitening_143x143.txt'
@@ -126,7 +126,7 @@ class like():
         cho_cov = cho_factor(self.sigma+beam_cov)
         
         lnl = dot(dcl,cho_solve(cho_cov, dcl))/2   + \
-        (fit_params['tau']-0.066)**2/(2*0.02**2) + \
+        (fit_params['tau']-0.07)**2/(2*0.02**2) + \
         self.fgs_priors(fit_params)
        
         return lnl
