@@ -76,7 +76,7 @@ class like():
         self.lmax = int(self.windowrange.stop)
         
         if lmax is not None:
-            bmax = sum(1 for _ in takewhile(lambda x: x<lmax, [self.windowrange.stop+1 - sum(1 for _ in takewhile(lambda x: abs(x)<.001,reversed(w)) ) for w in self.windows]))
+            bmax = sum(1 for _ in takewhile(lambda x: x<lmax, [self.lmax+1 - sum(1 for _ in takewhile(lambda x: abs(x)<.001,reversed(w)) ) for w in self.windows]))
         else: bmax = 47
         
         self.spectra = self.spectra[:bmax]
@@ -262,7 +262,7 @@ for i in arange(sim_start,sim_end+1):
     
         print best
         print "percent complete"
-        print j/((sim_end-sim_start)*100.0), '%'
+        print j/((sim_end-sim_start+1)*100.0), '%'
         if results == None: 
             results = best
             for k,v in results.iteritems():
