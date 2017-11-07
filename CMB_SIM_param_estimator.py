@@ -4,7 +4,7 @@ import camb
 from camb import model, initialpower
 from scipy.linalg import cho_factor, cho_solve, cholesky, inv
 from math import pi, log
-from numpy import inf, append, loadtxt, array, dot, isnan, identity, arange, exp, diag, hstack,delete,outer, zeros, shape
+from numpy import inf, append, loadtxt, array, dot, isnan, identity, arange, exp, diag, hstack,delete,outer, zeros, shape, fromfile
 from matplotlib.pyplot import plot
 from scipy.optimize import minimize
 import os.path as osp
@@ -67,7 +67,10 @@ class like():
         self.param_names = ['theta','ombh2','ommh2','clamp','ns','tau','Asz','Aps','Acib']
 
         if not use_data: 
-            self.spectra = loadtxt(sim_path+'sims400/bandpower_sim_'+sim_num+'.txt')[:cutoff,-1]
+            with open('dl_full','rb') as f:
+                data = fromfile(file=f,dtype=float)
+            self.spectra = data[(sim_num-1)*47:sim_num*47]
+            #self.spectra = loadtxt(sim_path+'sims400/bandpower_sim_'+sim_num+'.txt')[:cutoff,-1]
             self.sigma = loadtxt(sim_path+'covariance.txt')[:cutoff,:cutoff]
         else:
             self.spectra = loadtxt(sim_path+'/bandpower.txt')[:cutoff,-1]*cal
