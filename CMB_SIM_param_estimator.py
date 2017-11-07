@@ -45,7 +45,7 @@ class like():
         
         self.freqs = map(int,[spectra[:3],spectra[4:]])
         if spectra == '150x150':
-            sim_path = 'sims/150x150sims/'
+            sim_path = 'sims/150x150sims_wcal/'
             self.param_cov = 'params_for_whitening_150x150.txt'
             cal = 1.0087**2
             cutoff=47
