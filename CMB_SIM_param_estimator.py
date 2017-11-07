@@ -68,7 +68,7 @@ class like():
         if not use_data: 
             with open('dl_full','rb') as f:
                 data = fromfile(file=f,dtype=float)
-            self.spectra = data[(sim_num-1)*47:sim_num*47]
+            self.spectra = data[(int(sim_num)-1)*47:int(sim_num)*47]
             #self.spectra = loadtxt(sim_path+'sims400/bandpower_sim_'+sim_num+'.txt')[:cutoff,-1]
             self.sigma = loadtxt(sim_path+'covariance.txt')[:cutoff,:cutoff]
         else:
