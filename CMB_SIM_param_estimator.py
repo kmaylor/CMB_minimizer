@@ -47,7 +47,7 @@ class like():
         if spectra == '150x150':
             sim_path = 'Sims/150x150sims_wcal/'
             self.param_cov = 'params_for_whitening_150x150.txt'
-            cal = 1.0087**2
+            cal =1.# 1.0087**2
             cutoff=47
         elif spectra ==  '150x143':
             sim_path = 'sims/150x143sims/'
@@ -63,7 +63,7 @@ class like():
         else:
             print 'needs to be 150x150, 150x143, or 143x143'
        
-        self.param_names = ['theta','ombh2','ommh2','clamp','ns','tau','Asz','Aps','Acib']
+        self.param_names = ['theta','ombh2','ommh2','clamp','ns','tau']#,'Asz','Aps','Acib']
 
         if not use_data: 
             with open('dl_full','rb') as f:
@@ -94,19 +94,19 @@ class like():
             self.cho_param_cov = identity(7)
                     
         self.beam_corr = beam_errs(freqs=self.freqs)[self.windowrange,self.windowrange]
-        self.fgs = fgs_model(self.freqs)
-        self.tSZ_dep = self.fgs.tsz_dep
-        self.cib_dep = self.fgs.cib_dep
-        self.sz_prior = 5.5
-        self.ps_prior = 19.3
-        self.cib_prior = 5.0
+       # self.fgs = fgs_model(self.freqs)
+       # self.tSZ_dep = self.fgs.tsz_dep
+        #self.cib_dep = self.fgs.cib_dep
+      # self.sz_prior = 5.5
+       # self.ps_prior = 19.3
+      #  self.cib_prior = 5.0
         self.cmb_model = cmb_model(lmax = self.lmax)
         
     def cl_model(self, fit_params):
         
         spectra_theory = self.cmb_model(fit_params)[self.windowrange]
-        fgs = self.fgs(fit_params,self.lmax)[self.windowrange]
-        model = (spectra_theory+fgs)
+       # fgs = self.fgs(fit_params,self.lmax)[self.windowrange]
+        model = spectra_theory#(spectra_theory+fgs)
         return model
       
     def fgs_priors(self, fit_params):
@@ -131,8 +131,8 @@ class like():
         cho_cov = cho_factor(self.sigma+beam_cov)
         
         lnl = dot(dcl,cho_solve(cho_cov, dcl))/2   + \
-        (fit_params['tau']-0.07)**2/(2*0.02**2) + \
-        self.fgs_priors(fit_params)
+        (fit_params['tau']-0.07)**2/(2*0.02**2)#+ \
+        #self.fgs_priors(fit_params)
        
         return lnl
     
@@ -244,14 +244,14 @@ def CMB_param_estimator(like, start, method = 'powell', options = None):
 
 if spectra == '150x150':
         start = [  1.04037203,   0.02264724,   0.13110934,   1.93666773,
-         0.9254644 ,   0.06416065,   5.72741826,  20.0334358 ,   5.3754613 ]
+         0.9254644 ,   0.06416065]#,   5.72741826,  20.0334358 ,   5.3754613 ]
 
 elif spectra =='150x143':
         start = [  1.03958287,   0.02247682,   0.13569471,   1.93508836,
-         0.93324658,   0.06348503,   6.32184949,  19.77749923,   5.58548061]
+         0.93324658,   0.06348503]#,   6.32184949,  19.77749923,   5.58548061]
 else:
         start = [  1.03924319,   0.0221666 ,   0.14439015,   1.94318957,
-         0.94628772,   0.06790312,   6.63191637,  20.09969542,   5.25854533]
+         0.94628772,   0.06790312]#,   6.63191637,  20.09969542,   5.25854533]
 
 
 
